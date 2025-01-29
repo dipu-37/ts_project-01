@@ -11,18 +11,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentControllers = void 0;
 const student_server_1 = require("./student.server");
+const student_validation_1 = require("./student.validation");
+// insert  student 
 const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const student = req.body.student;
-        const result = yield student_server_1.StudentServices.createStudentIntoDB(student);
+        //validation schema using zod
+        const validateData = student_validation_1.StudentValidationSchema.parse(student);
+        const result = yield student_server_1.StudentServices.createStudentIntoDB(validateData);
         res.status(200).json({
             success: true,
             message: "student is create successfully",
             data: result,
         });
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message || 'something went wrong',
+            error: err
+        });
     }
 });
 //get all student

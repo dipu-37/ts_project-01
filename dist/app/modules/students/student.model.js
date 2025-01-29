@@ -1,11 +1,31 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StudentModel = void 0;
+exports.Student = void 0;
 const mongoose_1 = require("mongoose");
 const userNameSchema = new mongoose_1.Schema({
-    firstName: { type: String, required: true },
-    middleName: { type: String },
-    lastName: { type: String, required: true },
+    firstName: {
+        type: String,
+        required: [true, "First name is required"],
+        trim: true,
+    },
+    middleName: {
+        type: String,
+        trim: true,
+        required: false,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
 });
 const guardianSchema = new mongoose_1.Schema({
     fatherName: { type: String, required: true },
@@ -23,18 +43,27 @@ const localGuardianSchema = new mongoose_1.Schema({
 });
 const studentSchema = new mongoose_1.Schema({
     id: { type: String, required: true, unique: true },
-    name: userNameSchema,
-    gender: { type: String, enum: ['male', 'female'], required: true },
+    name: { type: userNameSchema, required: true },
+    gender: { type: String, enum: ["male", "female"], required: true },
     dateOfBirth: { type: String },
     email: { type: String, required: true, unique: true },
     contactNo: { type: String, required: true },
     emergencyContactNo: { type: String, required: true },
-    bloogGroup: { type: String, enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
+    bloodGroup: {
+        type: String,
+        enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    },
     presentAddress: { type: String, required: true },
-    permanentAddres: { type: String, required: true },
-    guardian: guardianSchema,
-    localGuardian: localGuardianSchema,
+    permanentAddress: { type: String, required: true },
+    guardian: { type: guardianSchema, required: true },
+    localGuardian: { type: localGuardianSchema, required: true },
     profileImg: { type: String },
-    isActive: { type: String, enum: ['active', 'blocked'], required: true },
+    isActive: { type: String, enum: ["active", "blocked"], required: true },
 });
-exports.StudentModel = (0, mongoose_1.model)('Student', studentSchema);
+studentSchema.methods.isUserExists = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const existingUser = yield exports.Student.findOne({ id });
+        return existingUser;
+    });
+};
+exports.Student = (0, mongoose_1.model)("Student", studentSchema);
