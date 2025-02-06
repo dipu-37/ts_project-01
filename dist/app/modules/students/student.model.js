@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Student = void 0;
 const mongoose_1 = require("mongoose");
+const bcrypt = require("bcrypt");
 const userNameSchema = new mongoose_1.Schema({
     firstName: {
         type: String,
@@ -43,6 +44,7 @@ const localGuardianSchema = new mongoose_1.Schema({
 });
 const studentSchema = new mongoose_1.Schema({
     id: { type: String, required: true, unique: true },
+    password: { type: String, required: true, unique: true },
     name: { type: userNameSchema, required: true },
     gender: { type: String, enum: ["male", "female"], required: true },
     dateOfBirth: { type: String },
@@ -60,10 +62,29 @@ const studentSchema = new mongoose_1.Schema({
     profileImg: { type: String },
     isActive: { type: String, enum: ["active", "blocked"], required: true },
 });
-studentSchema.methods.isUserExists = function (id) {
+// pre save middleware / hook : will work on save() or create()
+studentSchema.pre("save", function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        // console.log(this,'pre hook: we will save data');
+        // hashing password and save into db
+        const user = this;
+        user.password = yield bcrypt.hash(user.password, Number(process.env.SALT_ROUND));
+        //next();
+    });
+});
+studentSchema.post("save", function () {
+    console.log(this, "post hook : we will save our data");
+});
+//creating a custom static method
+studentSchema.statics.isUserExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         const existingUser = yield exports.Student.findOne({ id });
         return existingUser;
     });
 };
+//creating a custom instance method
+// studentSchema.methods.isUserExists = async function (id:string) {
+//   const existingUser = await Student.findOne({id});
+//   return existingUser;
+// }
 exports.Student = (0, mongoose_1.model)("Student", studentSchema);
