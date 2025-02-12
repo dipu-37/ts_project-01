@@ -44,7 +44,7 @@ const localGuardianSchema = new mongoose_1.Schema({
 });
 const studentSchema = new mongoose_1.Schema({
     id: { type: String, required: true, unique: true },
-    password: { type: String, required: true, unique: true },
+    password: { type: String, required: true, },
     name: { type: userNameSchema, required: true },
     gender: { type: String, enum: ["male", "female"], required: true },
     dateOfBirth: { type: String },
@@ -61,19 +61,49 @@ const studentSchema = new mongoose_1.Schema({
     localGuardian: { type: localGuardianSchema, required: true },
     profileImg: { type: String },
     isActive: { type: String, enum: ["active", "blocked"], required: true },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+}, {
+    toJSON: {
+        virtuals: true,
+    }
 });
+// virtual
+studentSchema.virtual('fullName').get(function () {
+    return `${this.name.firstName} ${this.name.lastName} ${this.name.middleName}`;
+});
+// document middleware
 // pre save middleware / hook : will work on save() or create()
-studentSchema.pre("save", function () {
+studentSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         // console.log(this,'pre hook: we will save data');
         // hashing password and save into db
-        const user = this;
+        const user = this; // current document j ta akon post man thaka send korci
         user.password = yield bcrypt.hash(user.password, Number(process.env.SALT_ROUND));
-        //next();
+        next();
     });
 });
-studentSchema.post("save", function () {
-    console.log(this, "post hook : we will save our data");
+studentSchema.post("save", function (doc, next) {
+    // doc  ------> updated document /hash + document 
+    doc.password = '';
+    //console.log("post hook : we will save our data");
+    next();
+});
+// query middleware;
+studentSchema.pre('find', function (next) {
+    //console.log(this);
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+studentSchema.pre('findOne', function (next) {
+    this.findOne({ isDeleted: { $ne: true } });
+    next();
+});
+studentSchema.pre('aggregate', function (next) {
+    this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+    next();
 });
 //creating a custom static method
 studentSchema.statics.isUserExists = function (id) {

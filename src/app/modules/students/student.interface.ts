@@ -38,6 +38,7 @@ export type TUserName = {
     localGuardian: TLocalGuardian;
     profileImg?: string;
     isActive: 'active' | 'blocked';
+    isDeleted:boolean;
   };
 
   //for creating static

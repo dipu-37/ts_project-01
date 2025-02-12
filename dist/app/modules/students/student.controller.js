@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentControllers = void 0;
 const student_server_1 = require("./student.server");
 const student_validation_1 = require("./student.validation");
-// insert  student 
+// insert  student
 const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const student = req.body.student;
@@ -28,8 +28,8 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     catch (err) {
         res.status(500).json({
             success: false,
-            message: err.message || 'something went wrong',
-            error: err
+            message: err.message || "something went wrong",
+            error: err,
         });
     }
 });
@@ -43,8 +43,12 @@ const getAllStudents = (req, res) => __awaiter(void 0, void 0, void 0, function*
             data: result,
         });
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err,
+        });
     }
 });
 // get single student
@@ -58,12 +62,35 @@ const getSingleStudent = (req, res) => __awaiter(void 0, void 0, void 0, functio
             data: result,
         });
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err,
+        });
+    }
+});
+const deleteStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { studentId } = req.params;
+        const result = yield student_server_1.StudentServices.deleteStudentFromDB(studentId);
+        res.status(200).json({
+            success: true,
+            message: "student is deleted successfully",
+            data: result,
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err,
+        });
     }
 });
 exports.StudentControllers = {
     createStudent,
     getAllStudents,
     getSingleStudent,
+    deleteStudent,
 };

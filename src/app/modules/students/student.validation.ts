@@ -42,5 +42,6 @@ export const StudentValidationSchema = z.object({
   localGuardian: LocalGuardianSchema,
   profileImg: z.string().url("Invalid URL").optional(),
   isActive: z.enum(["active", "blocked"]),
+  isDeleted : z.boolean(),
 });
 
