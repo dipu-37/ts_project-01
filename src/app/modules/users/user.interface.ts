@@ -1,10 +1,11 @@
 
 
-// export interface TUser  {
-//   id: string;
-//   password : string;
-//   needsPasswordChange : boolean;
-//   role: 'admin'|'student'|'faculty';
-//   status: 'in-progress'|'blocks';
-//   isDeleted: boolean;
-// }
+export type TUser = {
+  id: string;
+  password : string;
+  needsPasswordChange : boolean;
+  role: 'student'|'faculty'|'admin';
+  status: 'in-progress'|'blocks';
+  isDeleted: boolean;
+};
+

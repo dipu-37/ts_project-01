@@ -44,6 +44,7 @@ const localGuardianSchema = new mongoose_1.Schema({
 });
 const studentSchema = new mongoose_1.Schema({
     id: { type: String, required: true, unique: true },
+    user: { type: mongoose_1.Schema.Types.ObjectId, required: [true, 'User id is required'], unique: true, ref: 'User' },
     password: { type: String, required: true, },
     name: { type: userNameSchema, required: true },
     gender: { type: String, enum: ["male", "female"], required: true },
@@ -60,7 +61,6 @@ const studentSchema = new mongoose_1.Schema({
     guardian: { type: guardianSchema, required: true },
     localGuardian: { type: localGuardianSchema, required: true },
     profileImg: { type: String },
-    isActive: { type: String, enum: ["active", "blocked"], required: true },
     isDeleted: {
         type: Boolean,
         default: false,

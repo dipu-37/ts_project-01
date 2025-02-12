@@ -3,28 +3,29 @@ import { Request, Response } from "express";
 import { StudentServices } from "./student.server";
 import { z } from "zod";
 import { StudentValidationSchema } from "./student.validation";
+
 // insert  student
-const createStudent = async (req: Request, res: Response) => {
-  try {
-    const student = req.body.student;
+// const createStudent = async (req: Request, res: Response) => {
+//   try {
+//     const student = req.body.student;
 
-    //validation schema using zod
-    const validateData = StudentValidationSchema.parse(student);
+//     //validation schema using zod
+//     const validateData = StudentValidationSchema.parse(student);
 
-    const result = await StudentServices.createStudentIntoDB(validateData);
-    res.status(200).json({
-      success: true,
-      message: "student is create successfully",
-      data: result,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || "something went wrong",
-      error: err,
-    });
-  }
-};
+//     const result = await StudentServices.createStudentIntoDB(validateData);
+//     res.status(200).json({
+//       success: true,
+//       message: "student is create successfully",
+//       data: result,
+//     });
+//   } catch (err: any) {
+//     res.status(500).json({
+//       success: false,
+//       message: err.message || "something went wrong",
+//       error: err,
+//     });
+//   }
+// };
 
 //get all student
 
@@ -84,7 +85,7 @@ const deleteStudent = async (req: Request, res: Response) => {
 };
 
 export const StudentControllers = {
-  createStudent,
+  // createStudent,
   getAllStudents,
   getSingleStudent,
   deleteStudent,

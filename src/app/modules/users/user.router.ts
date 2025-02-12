@@ -1,6 +1,11 @@
-// import express from 'express'
-// const router = express.Router();
-// router.post('/create-user',userController.createUser)
+
+import express from 'express'
+import { userControllers } from './user.controller';
 
 
-// export const userRoute = router;
+
+const router = express.Router();
+router.post('/create-user',userControllers.createStudent)
+
+
+export const userRoute = router;
