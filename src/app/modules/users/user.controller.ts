@@ -1,28 +1,27 @@
 
-import { Request, Response } from "express";
-import { StudentServices } from "../students/student.server";
-import { StudentValidationSchema } from "../students/student.validation";
+import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
+import sendResponse from "../../utils/sendRespons";
+import status from "http-status";
 
-const createStudent = async (req: Request, res: Response) => {
+const createStudent = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { password, student: StudentData } = req.body;
-    // const zodParsedData = StudentValidationSchema.parse(StudentData);
+  
     const result = await UserServices.createStudentIntoDB(
       password,
       StudentData
     );
-    res.status(200).json({
-      success: true,
-      message: "student create successfully",
-      data: result,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-        success: false,
-        message: err.message || 'something went wrong',
-        error : err,
-    });
+
+   sendResponse(res,{
+    statusCode: status.OK,
+    success: true,
+    message: 'student created successfully',
+    data : result
+   });
+
+  } catch (err) {
+   next(err)
   }
 };
 

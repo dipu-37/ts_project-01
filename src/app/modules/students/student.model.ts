@@ -43,8 +43,8 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 
 const studentSchema = new Schema<TStudent, StudentModel>({
   id: { type: String, required: true, unique: true },
-  user:{type:Schema.Types.ObjectId,required:[true,'User id is required'], unique: true, ref:'User'},
-  password: { type: String, required: true, },
+  user:{type:Schema.Types.ObjectId,required:[true,'User id is required'], unique: true, ref:'User'},  /// here -- ref:"User--is a collection name of user see use collection "
+
   name: { type: userNameSchema, required: true },
   gender: { type: String, enum: ["male", "female"], required: true },
   dateOfBirth: { type: String },
@@ -80,28 +80,6 @@ studentSchema.virtual('fullName').get(function(){
 
 
 
-// document middleware
-// pre save middleware / hook : will work on save() or create()
-
-studentSchema.pre("save",async function (next) {
-  // console.log(this,'pre hook: we will save data');
-
-  // hashing password and save into db
-  const user = this;  // current document j ta akon post man thaka send korci
-  user.password = await bcrypt.hash(user.password, Number(process.env.SALT_ROUND));
-  next();
-});
-
-
-
-studentSchema.post("save", function (doc,next) {
-
-  // doc  ------> updated document /hash + document 
-  doc.password='';
-  //console.log("post hook : we will save our data");
-  next();
-});
-
 
 // query middleware;
 
@@ -130,10 +108,5 @@ studentSchema.statics.isUserExists = async function (id: string) {
   return existingUser;
 };
 
-//creating a custom instance method
-// studentSchema.methods.isUserExists = async function (id:string) {
-//   const existingUser = await Student.findOne({id});
-//   return existingUser;
-// }
 
 export const Student = model<TStudent, StudentModel>("Student", studentSchema);
