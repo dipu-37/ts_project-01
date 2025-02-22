@@ -21,6 +21,7 @@ const createAcademicSemester = catchAsync(async (req,res)=>{
 
 
 
+
 export const AcademicSemesterControllers = {
     createAcademicSemester
 }
