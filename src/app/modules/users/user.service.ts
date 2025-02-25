@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { generateStudentId } from "../../utils/user.utils";
 import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
 import { AcademicSemester } from "../academicSemester/academicSemester.model";
@@ -5,6 +6,8 @@ import { TStudent } from "../students/student.interface";
 import { Student } from "../students/student.model";
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
+import AppError from "../../errors/AppError";
+import status from "http-status";
 
 const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
   // create a user objects
@@ -16,34 +19,49 @@ const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
   // set use roll
   userData.role = "student";
 
-
- 
-
   // find academic semester info
 
-  const admissionSemester = await AcademicSemester.findById(payLoad.admissionSemester);
+  const admissionSemester = await AcademicSemester.findById(
+    payLoad.admissionSemester
+  );
 
   if (!admissionSemester) {
     throw new Error("Admission semester not found!");
   }
 
-   // set manually generated id
-  userData.id = await  generateStudentId(admissionSemester);
+  // create session
+  const session = await mongoose.startSession();
 
-  // create a user
-  const NewUser = await User.create(userData); // built in static
-  
+  try {
+    session.startTransaction();
+    // set generated id
+    userData.id = await generateStudentId(admissionSemester);
 
-  // create a student 
-  if(Object.keys(NewUser).length){
-    // set id, _id as user
-    payLoad.id = NewUser.id;  // 
-    payLoad.user = NewUser._id; // ref _id 
+    // create a user (transaction -1)
+    const NewUser = await User.create([userData], { session }); //array
 
-    const newStudent = await Student.create(payLoad);
-    return newStudent;
+    if (!NewUser.length) {
+      throw new AppError(status.BAD_REQUEST,'failed to create user')
+    }
+
+    // create a student
+      // set id, _id as user
+      payLoad.id = NewUser[0].id; //
+      payLoad.user = NewUser[0]._id; // ref _id
+
+      // create a student (transaction -2)
+      const newStudent = await Student.create([payLoad],{session});  // array
+
+      await session.commitTransaction();
+      await session.endSession();
+
+      return newStudent;
+    
+  } catch (err : any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
   }
-
 };
 
 export const UserServices = {

@@ -3,9 +3,9 @@ import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 import { StudentRoute } from './modules/students/student.route'
 import { userRoute } from './modules/users/user.router'
-import { globalErrorHandler } from './middlewares/globalErrorHandler';
 import { notFound } from './middlewares/notFound';
 import router from './routes';
+import globalErrorHandler from './middlewares/globalErrorHandler';
 
 
 const app : Application = express()
