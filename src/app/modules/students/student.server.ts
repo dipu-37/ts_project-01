@@ -4,68 +4,19 @@ import AppError from "../../errors/AppError";
 import status from "http-status";
 import { User } from "../users/user.model";
 import { TStudent } from "./student.interface";
+import QueryBuilder from "../../builder/Querybuilder";
+import { studentSearchableFields } from "./student.constant";
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  console.log("Base query:", query);
-  const queryObj = { ...query };
+  const studentQuery = new QueryBuilder(Student.find(),query)
+  .search(studentSearchableFields)
+  .filter()
+  .sort()
+  .paginate()
+  .fields()
 
-  // Searchable fields
-  const studentSearchableFields = ["email", "name.firstName", "presentAddress"];
-
-  let searchTerm = "";
-  if (query?.searchTerm) {
-    searchTerm = query?.searchTerm as string;
-  }
-
-  // Creating the search query for the fields
-  const searchQuery = Student.find({
-    $or: studentSearchableFields.map((field) => ({
-      [field]: { $regex: searchTerm, $options: "i" },
-    })),
-  });
-
-  // Filtering the query by excluding 'searchTerm' and 'sort'
-  const excludeFields = ["searchTerm", "sort", "limit"];
-  excludeFields.forEach((element) => {
-    delete queryObj[element];
-  });
-
-  //console.log("Filtered query object:", queryObj);
-
-  // Apply filtering to the query
-  let filterQuery = searchQuery.find(queryObj);
-
-  // Handling sorting
-  let sort: string = "-createdAt"; // Default sort
-  if (query.sort) {
-    sort = query.sort as string;
-  }
-
-  // Convert sort string to a valid object for Mongoose sort
-  let sortQuery: { [key: string]: SortOrder } = {};
-  if (sort.startsWith("-")) {
-    sortQuery[sort.slice(1)] = -1;  // Descending order
-  } else {
-    sortQuery[sort] = 1;  // Ascending order
-  }
-
-  //console.log("Sort query:", sortQuery);
-
-  // Apply sorting
-  filterQuery = filterQuery.sort(sortQuery);
-
-  // Handling limit
-  let limit = 1;
-  if (query.limit) {
-    limit = Number(query.limit);  // Convert to number
-  }
-
-  //console.log("Limit query:", limit);
-
-  // Apply limit to the query
-  filterQuery = filterQuery.limit(limit);
-
-  return filterQuery;
+  const result = await studentQuery.modelQuery;
+  return result;
 };
 
 
@@ -171,3 +122,99 @@ export const StudentServices = {
   deleteStudentFromDB,
   updateStudentFromDB,
 };
+
+
+
+
+
+
+
+
+
+/*
+
+
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  console.log("Base query:", query);
+  const queryObj = { ...query };
+
+  // Searchable fields
+  const studentSearchableFields = ["email", "name.firstName", "presentAddress"];
+
+  let searchTerm = "";
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  // Creating the search query for the fields
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: "i" },
+    })),
+  });
+
+  // Filtering the query by excluding 'searchTerm' and 'sort'
+  const excludeFields = ["searchTerm", "sort", "limit","page","fields"];
+  excludeFields.forEach((element) => {
+    delete queryObj[element];
+  });
+
+  console.log("Filtered query object:", queryObj);
+
+  // Apply filtering to the query
+  let filterQuery = searchQuery.find(queryObj);
+
+  // Handling sorting
+  let sort: string = "-createdAt"; // Default sort
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  // Convert sort string to a valid object for Mongoose sort
+  let sortQuery: { [key: string]: SortOrder } = {};
+  if (sort.startsWith("-")) {
+    sortQuery[sort.slice(1)] = -1; // Descending order
+  } else {
+    sortQuery[sort] = 1; // Ascending order
+  }
+
+  //console.log("Sort query:", sortQuery);
+
+  // Apply sorting
+  const applysortQuery = filterQuery.sort(sortQuery);
+
+  // Handling limit
+
+  let page = 1;
+  let limit = 1;
+  let skip = 0;
+
+  if (query.limit) {
+    limit = Number(query.limit); // Convert to number
+  }
+
+  if (query.page) {
+    page = Number(query.page);
+    skip = (page - 1) * limit;
+  }
+  const paginateQuery = applysortQuery.skip(skip);
+
+  const limitQuery = applysortQuery.limit(limit);
+
+
+  // field limiting
+  let fields = '_v';
+  // fields : 'name,email';
+  // fields : 'name email'
+  if(query.fields){
+    fields = (query.fields as string).split(',').join(' ');
+    console.log({fields});
+  }
+
+  const fieldQuery = await limitQuery.select(fields);
+
+
+  return fieldQuery;
+};
+
+*/

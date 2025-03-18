@@ -10,6 +10,11 @@ const userSchema = new Schema<TUser>({
     require: true,
     unique: true,
   },
+  email:{
+    type: String,
+   
+    unique: true,
+  },
   password : {
     type: String,
     require: true
@@ -18,9 +23,12 @@ const userSchema = new Schema<TUser>({
     type : Boolean,
     default:true,
   },
+  passwordChangedAt:{
+     type : Date,
+  },
   role: {
     type: String,
-    enum : ['student','faculty','admin'],
+    enum : ['student','faculty','admin','superAdmin'],
   },
   status: {
     type: String,
@@ -34,14 +42,13 @@ const userSchema = new Schema<TUser>({
   
 },
 {
-  timestamps: true, //createdat updatedat  mongoose bydefault create kora
+  timestamps: true, 
 },
 
 );
 
 
-// document middleware
-// pre save middleware / hook : will work on save() or create()
+// save() or create()
 
 userSchema.pre("save",async function (next) {
   // console.log(this,'pre hook: we will save data');
