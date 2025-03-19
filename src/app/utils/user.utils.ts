@@ -24,6 +24,24 @@ export const findLastAdminId = async()=>{
   return lastAdmin?.id ? lastAdmin.id.substring(2) : undefined;
 }
 
+export const findLastFacultyId = async () => {
+  const lastFaculty = await User.findOne(
+    {
+      role: 'faculty',
+    },
+    {
+      id: 1,
+      _id: 0,
+    },
+  )
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
+
+  return lastFaculty?.id ? lastFaculty.id.substring(2) : undefined;
+};
+
 // year semesterCode 4digits code
 export const generateStudentId = async (payLoad: TAcademicSemester) => {
   // fist time 0000
@@ -63,3 +81,19 @@ export const generatedAdminId = async()=>{
   incrementId =`A-${incrementId}`;
   return incrementId
 }
+
+
+export const generateFacultyId = async () => {
+  let currentId = (0).toString();
+  const lastFacultyId = await findLastFacultyId();
+
+  if (lastFacultyId) {
+    currentId = lastFacultyId.substring(2);
+  }
+
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+
+  incrementId = `F-${incrementId}`;
+
+  return incrementId;
+};
