@@ -23,7 +23,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
 
 
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await Student.findOne({ id })
+  const result = await Student.findById(id)
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -69,7 +69,7 @@ const updateStudentFromDB = async (id: string, payLoad: Partial<TStudent>) => {
     }
   }
 
-  const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData);
+  const result = await Student.findByIdAndUpdate(id, modifiedUpdatedData);
   return result;
 };
 

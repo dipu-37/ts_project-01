@@ -1,4 +1,3 @@
-import { RequestHandler } from "express";
 import { FilterQuery, Query } from "mongoose";
 
 class QueryBuilder<T> {
