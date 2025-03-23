@@ -1,10 +1,10 @@
 import exp from "constants";
 import { model, Schema } from "mongoose"
-import { TUser } from "./user.interface";
+import { TUser, UserModel } from "./user.interface";
 const bcrypt = require("bcrypt");
 
 
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser,UserModel>({
   id: {
     type: String,
     require: true,
@@ -32,7 +32,7 @@ const userSchema = new Schema<TUser>({
   },
   status: {
     type: String,
-    enum : ['in-progress','blocks'],
+    enum : ['in-progress','blocked'],
     default:'in-progress'
   },
   isDeleted:{
@@ -69,6 +69,14 @@ userSchema.post("save", function (doc,next) {
   next();
 });
 
+userSchema.statics.isUserExistsByCustomId = async function (id: string) {
+  return await User.findOne({id})
+};
+
+userSchema.statics.isPasswordMatched = async function (plainTextPassword , hashedPassword) {
+  
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
 
 
-export const User = model<TUser>('User',userSchema)
+export const User = model<TUser,UserModel>('User',userSchema)
