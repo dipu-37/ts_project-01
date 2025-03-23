@@ -1,3 +1,4 @@
+import { TSchedule } from "./OfferedCourse.interface";
 
 
 
