@@ -23,6 +23,8 @@ const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
 
   // set use roll
   userData.role = "student";
+  userData.email = payLoad.email;
+
 
   // find academic semester info
 

@@ -1,9 +1,9 @@
 import { AcademicDepartment } from './academicDepartment.model';
 
 import express  from 'express';
-import { validateRequest } from '../../middlewares/validateRequest';
 import { AcademicDepartmentValidation } from './academicDepartment.validation';
 import { AcademicDepartmentController } from './academicDepartment.controller';
+import validateRequest from '../../middlewares/validateRequest';
 
 
 const router = express.Router();

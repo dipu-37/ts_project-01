@@ -12,12 +12,13 @@ const userSchema = new Schema<TUser,UserModel>({
   },
   email:{
     type: String,
-   
+    required: true,
     unique: true,
   },
   password : {
     type: String,
-    require: true
+    require: true,
+    select: 0,  /// find korlaw password show korba ne
   },
   needsPasswordChange :{
     type : Boolean,
@@ -70,13 +71,23 @@ userSchema.post("save", function (doc,next) {
 });
 
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
-  return await User.findOne({id})
+  return await User.findOne({id}).select('+password');
 };
 
 userSchema.statics.isPasswordMatched = async function (plainTextPassword , hashedPassword) {
   
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
+
+
+userSchema.statics.isJWTIssuedBeforePasswordChange = function(
+  passwordChangeTimestamp : Date,
+  jwtIssuedTimestamp : number,
+){
+  const passwordChangedTime = new Date(passwordChangeTimestamp).getTime()/1000  // ms--> second
+
+  return passwordChangedTime > jwtIssuedTimestamp;
+}
 
 
 export const User = model<TUser,UserModel>('User',userSchema)

@@ -4,6 +4,21 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 
 
+
+const getAllFaculties = catchAsync(async(req,res)=>{
+
+  console.log(req.cookies);
+ 
+  const result = await FacultyServices.getAllFacultiesFromDB(req.query);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Faculties are retrieved successfully',
+    data: result,
+  });
+})
+
 const getSingleFaculty = catchAsync(async (req, res) => {
     const { id } = req.params;
     const result = await FacultyServices.getSingleFacultyFromDB(id);
@@ -19,4 +34,5 @@ const getSingleFaculty = catchAsync(async (req, res) => {
 
   export const FacultyControllers = {
     getSingleFaculty,
+    getAllFaculties,
   };

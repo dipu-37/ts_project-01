@@ -1,7 +1,7 @@
 import  express from 'express';
-import { validateRequest } from '../../middlewares/validateRequest';
 import { SemesterRegistrationValidation } from './semesterRegistration.validation';
 import { semesterRegistrationController } from './semesterRegistration.controller';
+import validateRequest from '../../middlewares/validateRequest';
 
 
 

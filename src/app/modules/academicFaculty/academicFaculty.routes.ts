@@ -2,10 +2,10 @@ import { AcademicFaculty } from './academicFaculty.model';
 
 import express from 'express';
 
-import { validateRequest } from '../../middlewares/validateRequest';
 import { AcademicSemesterValidation } from '../academicSemester/academicSemester.validation';
 import { AcademicFacultyControllers } from './academicFaculty.controller';
 import { AcademicFacultyValidation } from './academicFaculty.validation';
+import validateRequest from '../../middlewares/validateRequest';
 
 
 
