@@ -8,7 +8,7 @@ import { USER_ROLE } from '../users/user.constant'
 const router = express.Router()
 
 
-router.post('/create-course',auth(USER_ROLE.admin),validateRequest(CourseValidations.createCourseValidationSchema),CourseControllers.createCourse)
+router.post('/create-course',auth(USER_ROLE.admin),validateRequest(CourseValidations.createCourseValidationSchema),CourseControllers.createCourse);
 
 router.get('/',CourseControllers.getAllCourse);
 
