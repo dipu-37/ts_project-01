@@ -1,6 +1,7 @@
 import { ZodDefaultDef } from "./../../../../node_modules/zod/lib/types.d";
 
 import { z } from "zod";
+import { UserStatus } from "./user.constant";
 
 const userValidationSchema = z.object({
   //id: z.string(),
@@ -18,6 +19,14 @@ const userValidationSchema = z.object({
   //isDeleted: z.boolean().optional().default(false),
 });
 
+
+const changeStatusValidationSchema = z.object({
+  body : z.object({
+    status : z.enum([...UserStatus] as [string, ...string[]])
+  })
+})
+
 export const userValidation = {
   userValidationSchema,
+  changeStatusValidationSchema,
 };
