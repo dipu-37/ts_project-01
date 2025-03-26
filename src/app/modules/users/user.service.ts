@@ -15,7 +15,7 @@ import { AcademicDepartment } from "../academicDepartment/academicDepartment.mod
 import { Faculty } from "../faculty/faculty.model";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
-const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
+const createStudentIntoDB = async (file : any,password: string, payLoad: TStudent) => {
   // create a user objects
   const userData: Partial<TUser> = {};
 
@@ -45,7 +45,18 @@ const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
     // set generated id
     userData.id = await generateStudentId(admissionSemester);
 
-    sendImageToCloudinary();
+    if(file){
+      const imageName = `${userData.id}${payLoad?.name?.firstName}`;
+
+      const path = file?.path;
+
+       // send image to cloudinary 
+       const {secure_url } = await sendImageToCloudinary(imageName,path);
+
+       payLoad.profileImg = secure_url as string;
+       
+    }
+   
 
     // create a user (transaction -1)
     const NewUser = await User.create([userData], { session }); //array
