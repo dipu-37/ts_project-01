@@ -24,7 +24,8 @@ const getAllCourse = catchAsync(async ( req,res)=>{
         statusCode : status.OK,
         success : true,
         message : "Course is retrieved successfully",
-        data : result,
+        meta : result.meta,
+        data : result.result,
     })
 })
 

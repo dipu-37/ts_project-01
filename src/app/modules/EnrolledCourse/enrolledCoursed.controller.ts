@@ -19,6 +19,7 @@ const createEnrolledCourse = catchAsync(async(req,res)=>{
       });
 })
 
+
 const updateEnrolledCourseMark = catchAsync(async(req,res)=>{
     const facultyId = req.user.userId;
     const result = await EnrolledCourseServer.updateEnrolledCourseMarksIntoDB(facultyId, req.body)
