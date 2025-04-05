@@ -1,3 +1,4 @@
+import { generateFacultyId } from './../../utils/user.utils';
 import exp from "constants";
 import { TCourse, TCourseFaculty } from "./course.interface";
 import { Course, CourseFaculty } from "./course.model";
@@ -129,6 +130,12 @@ const assignFacultiesWithCourseIntoDB = async (id : string, payload : Partial<TC
 }
 
 
+const getFacultiesWithCourseFromDB = async (courseId : string)=>{
+  const result = await CourseFaculty.findOne({course : courseId}).populate('faculties')
+
+  return result;
+}
+
 const removeFacultiesFromCourseFromDB = async(id: string, payload : Partial<TCourseFaculty>)=>{
   const result = await CourseFaculty.findByIdAndUpdate(id,
     {
@@ -150,5 +157,6 @@ export const CourseService = {
   updateCourseIntoDB,
   assignFacultiesWithCourseIntoDB,
   removeFacultiesFromCourseFromDB,
+  getFacultiesWithCourseFromDB,
   
 };

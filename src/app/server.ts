@@ -2,6 +2,7 @@ import app from "./app";
 import dotenv from "dotenv";
 import { Server } from "http";
 import mongoose from "mongoose";
+import seedSuperAdmin from "./DB";
 
 dotenv.config();
 
@@ -12,6 +13,9 @@ let server : Server;
 async function main() {
   try {
     await mongoose.connect(process.env.MONGODB_URL as string);
+    
+    // create super admin
+    seedSuperAdmin();
     console.log("🟢 Connected to MongoDB successfully");
 
     server = app.listen(port, () => {

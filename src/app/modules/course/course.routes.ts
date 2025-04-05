@@ -3,25 +3,28 @@ import { CourseControllers } from './course.controller'
 import { CourseValidations } from './course.validation'
 import validateRequest from '../../middlewares/validateRequest'
 import auth from '../../middlewares/auth'
-import { USER_ROLE } from '../users/user.constant'
 
 const router = express.Router()
 
 
-router.post('/create-course',auth(USER_ROLE.admin),validateRequest(CourseValidations.createCourseValidationSchema),CourseControllers.createCourse);
+router.post('/create-course',auth('admin','superAdmin'),validateRequest(CourseValidations.createCourseValidationSchema),CourseControllers.createCourse);
 
-router.get('/',CourseControllers.getAllCourse);
+router.get('/',auth('superAdmin','admin','faculty','student'),CourseControllers.getAllCourse);
 
-router.get('/:id',CourseControllers.getSingleCourse);
-
-
-router.delete('/:id',CourseControllers.deleteCourse);
-
-router.patch('/:id',validateRequest(CourseValidations.updateCreateCourseValidationSchema),CourseControllers.updateCourse)
-
-router.put('/:courseId/assign-faculties',validateRequest(CourseValidations.FacultiesWithCourseValidationSchema),CourseControllers.assignFacultiesWithCourse)
+router.get('/:id',auth('superAdmin','admin','faculty','student'),CourseControllers.getSingleCourse);
 
 
-router.delete('/:courseId/remove-faculties',validateRequest(CourseValidations.FacultiesWithCourseValidationSchema),CourseControllers.removeFacultiesFromCourses)
+router.delete('/:id',auth('superAdmin','admin'),CourseControllers.deleteCourse);
+
+router.patch('/:id',auth('superAdmin','admin'),validateRequest(CourseValidations.updateCreateCourseValidationSchema),CourseControllers.updateCourse)
+
+router.put('/:courseId/assign-faculties',auth('superAdmin','admin'),validateRequest(CourseValidations.FacultiesWithCourseValidationSchema),CourseControllers.assignFacultiesWithCourse)
+
+router.get('/:courseId/get-faculties',
+    auth('superAdmin','admin','faculty','student'),CourseControllers.getFacultiesWithCourse
+)
+
+router.delete('/:courseId/remove-faculties',auth('superAdmin','admin'),validateRequest(CourseValidations.FacultiesWithCourseValidationSchema),CourseControllers.removeFacultiesFromCourses)
 
 export const CourseRoutes = router; 
+

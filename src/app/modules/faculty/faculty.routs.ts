@@ -9,10 +9,12 @@ import { USER_ROLE } from '../users/user.constant';
 
  router.get(
     '/:id',
+    auth('admin','superAdmin','faculty'),
     FacultyControllers.getSingleFaculty,
   );
 
 
-  router.get('/',auth(USER_ROLE.admin),FacultyControllers.getAllFaculties)
+router.get('/',auth('superAdmin','admin','faculty'),
+FacultyControllers.getAllFaculties)
 
 export const FacultyRoutes = router;
